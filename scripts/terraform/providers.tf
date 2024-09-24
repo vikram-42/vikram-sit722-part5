@@ -1,6 +1,4 @@
-provider "azurerm" {
-  features {}
-}
+# Initialises Terraform providers and sets their version numbers.
 
 terraform {
   required_providers {
@@ -10,7 +8,10 @@ terraform {
     }
   }
 
-  backend "local" {
-    path = "terraform.tfstate"
-  }
+  required_version = ">= 1.5.6"
+}
+
+provider "azurerm" {
+  features {}
+  skip_provider_registration = true
 }
