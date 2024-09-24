@@ -1,0 +1,64 @@
+# 
+# GitHub Actions workflow for automatic deployment of the Node.js microservice to Kubernetes on push to the main branch.
+#
+
+name: Deploy inventory_management microservice
+
+on:
+  # Trigger the workflow on push events to the main branch, only for changes in the inventory_management directory.
+  push: 
+    branches:
+      - main
+    paths:
+      - inventory_management/**
+
+  # Allow manual workflow runs via GitHub Actions UI.
+  workflow_dispatch: 
+
+jobs:
+
+  deploy:
+    runs-on: ubuntu-latest
+    
+    env:
+      VERSION: ${{ github.sha }}
+      CONTAINER_REGISTRY: ${{ secrets.CONTAINER_REGISTRY }}
+      REGISTRY_UN: ${{ secrets.REGISTRY_UN }}
+      REGISTRY_PW: ${{ secrets.REGISTRY_PW }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      NAME: inventory_management
+      DIRECTORY: inventory_management
+
+    steps:
+      # Checkout the repository code.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Grant execute permissions for required scripts.
+      - name: Make build script executable
+        run: chmod +x ./scripts/build-image.sh
+
+      - name: Make push script executable
+        run: chmod +x ./scripts/push-image.sh
+
+      - name: Make deploy script executable
+        run: chmod +x ./scripts/deploy.sh
+
+      # Build the Docker image.
+      - name: Build Docker image
+        run: ./scripts/build-image.sh
+
+      # Push the Docker image to the container registry.
+      - name: Push Docker image
+        run: ./scripts/push-image.sh
+
+      # Install and configure Kubectl to interact with the Kubernetes cluster.
+      - name: Install and configure kubectl
+        uses: tale/kubectl-action@v1
+        with:
+          base64-kube-config: ${{ secrets.KUBE_CONFIG }}
+          kubectl-version: v1.24.2
+      
+      # Deploy the microservice to Kubernetes.
+      - name: Deploy to Kubernetes
+        run: ./scripts/deploy.sh
