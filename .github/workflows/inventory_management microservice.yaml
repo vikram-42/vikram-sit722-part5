@@ -1,6 +1,4 @@
-# 
 # GitHub Actions workflow for automatic deployment of the Node.js microservice to Kubernetes on push to the main branch.
-#
 
 name: Deploy inventory_management microservice
 
@@ -59,22 +57,6 @@ jobs:
           base64-kube-config: ${{ secrets.KUBE_CONFIG }}
           kubectl-version: v1.24.2
 
-      # Substitute environment variables and apply the Kubernetes manifest
-      - name: Substitute variables and deploy to Kubernetes
-        run: |
-          set -e
-          # Ensure all required variables are set
-          : "$CONTAINER_REGISTRY"
-          : "$DIRECTORY"
-          : "$VERSION"
-          : "$DATABASE_URL"
-
-          # Output the substituted Kubernetes manifest for debugging
-          echo "Substituting environment variables in the Kubernetes manifest..."
-          envsubst < ./scripts/kubernetes/deployment.yaml > substituted-deployment.yaml
-          
-          echo "The substituted deployment manifest is:"
-          cat substituted-deployment.yaml  # Show the substituted manifest for debugging
-
-          # Apply the Kubernetes deployment manifest
-          kubectl apply -f substituted-deployment.yaml
+      # Deploy the microservice to Kubernetes.
+      - name: Deploy to Kubernetes
+        run: ./scripts/deploy.sh
