@@ -1,29 +1,77 @@
-version: '3'
-services:
+# Deployment and Service for book_catalog
 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book-catalog-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: book-catalog
+  template:
+    metadata:
+      labels:
+        app: book-catalog
+    spec:
+      containers:
+      - name: book-catalog
+        image: $CONTAINER_REGISTRY/book-catalog:$VERSION
+        imagePullPolicy: Always
+        env:
+        - name: PORT
+          value: "8000"
+        - name: DATABASE_URL
+          value: $DATABASE_URL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: book-catalog-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: book-catalog
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+---
+# Deployment and Service for inventory_management
 
-  book_catalog:
-    image: book_catalog
-    build: 
-      context: ./book_catalog
-      dockerfile: Dockerfile
-    container_name: book_catalog
-    ports:
-      - "8000:8000"
-    environment:
-      - PORT=8000
-      - DATABASE_URL=postgresql://library_db_07jy_user:sbQJ2bDxPELACL7bH3gAXMKLDAlYn79d@dpg-crp2tndds78s73d3ltjg-a.oregon-postgres.render.com/library_db_07jy
-    restart: "no"
-  
-  inventory_management:
-    image: inventory_management
-    build: 
-      context: ./inventory_management
-      dockerfile: Dockerfile
-    container_name: inventory_management
-    ports:
-      - "8001:8001"
-    environment:
-      - PORT=8001
-      - DATABASE_URL=postgresql://library_db_07jy_user:sbQJ2bDxPELACL7bH3gAXMKLDAlYn79d@dpg-crp2tndds78s73d3ltjg-a.oregon-postgres.render.com/library_db_07jy
-    restart: "no"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-management-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: inventory-management
+  template:
+    metadata:
+      labels:
+        app: inventory-management
+    spec:
+      containers:
+      - name: inventory-management
+        image: $CONTAINER_REGISTRY/inventory-management:$VERSION
+        imagePullPolicy: Always
+        env:
+        - name: PORT
+          value: "8001"
+        - name: DATABASE_URL
+          value: $DATABASE_URL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-management-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: inventory-management
+  ports:
+    - protocol: TCP
+      port: 81
+      targetPort: 8001
