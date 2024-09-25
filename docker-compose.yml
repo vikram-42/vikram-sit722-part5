@@ -1,28 +1,24 @@
 version: '3'
-services:
 
+services:
   book_catalog:
     image: book_catalog
-    build: 
+    build:
       context: ./book_catalog
       dockerfile: Dockerfile
     container_name: book_catalog
     ports:
       - "8000:8000"
     environment:
-      - PORT=8000
-      - DATABASE_URL=ppostgresql://library_db_ohoy_user:9iacyfby4bYZd7na4O55lEnSqjTUCJfl@dpg-crhb5o5svqrc738asi2g-a.oregon-postgres.render.com/library_db_ohoy
-    restart: "no"
-  
+      DATABASE_URL: postgresql://library_db_07jy_user:sbQJ2bDxPELACL7bH3gAXMKLDAlYn79d@dpg-crp2tndds78s73d3ltjg-a.oregon-postgres.render.com/library_db_07jy
+
   inventory_management:
     image: inventory_management
-    build: 
+    build:
       context: ./inventory_management
       dockerfile: Dockerfile
-    container_name: inventory_management
+    container_name: inventory_management  
     ports:
       - "8001:8001"
     environment:
-      - PORT=8001
-      - DATABASE_URL=postgresql://library_db_ohoy_user:9iacyfby4bYZd7na4O55lEnSqjTUCJfl@dpg-crhb5o5svqrc738asi2g-a.oregon-postgres.render.com/library_db_ohoy
-    restart: "no"
+      DATABASE_URL: postgresql://library_db_07jy_user:sbQJ2bDxPELACL7bH3gAXMKLDAlYn79d@dpg-crp2tndds78s73d3ltjg-a.oregon-postgres.render.com/library_db_07jy
