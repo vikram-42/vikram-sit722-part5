@@ -1,4 +1,6 @@
+# 
 # GitHub Actions workflow for automatic deployment of the Node.js microservice to Kubernetes on push to the main branch.
+#
 
 name: Deploy inventory_management microservice
 
@@ -56,7 +58,7 @@ jobs:
         with:
           base64-kube-config: ${{ secrets.KUBE_CONFIG }}
           kubectl-version: v1.24.2
-
+      
       # Deploy the microservice to Kubernetes.
       - name: Deploy to Kubernetes
         run: ./scripts/deploy.sh
